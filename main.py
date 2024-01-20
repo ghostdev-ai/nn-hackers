@@ -46,6 +46,28 @@ class Softmax:
         normValues = expValues / np.sum(expValues, axis=1, keepdims=True)
         self.output = normValues
 
+class Loss:
+    def calculate(self, output, y):
+        sample_loss = self.forward(output, y)
+        data_loss = np.mean(sample_loss)
+        return data_loss
+    
+
+class CategoricalCrossEntropy(Loss):
+    def forward(self, y_pred, y_true):
+        samples = len(y_pred)
+        y_pred_clipped = np.clip(y_pred, 1e-7, 1-1e-7)
+
+        if len(y_true.shape) == 1:
+            correctConfidences = y_pred_clipped[range(samples), y_true]
+        elif len(y_true.shape) == 2:
+            correctConfidences = np.sum(y_pred_clipped * y_true, axis=1)
+
+        print(correctConfidences)
+        negativeLogLiklihoods = -np.log(correctConfidences)
+        return negativeLogLiklihoods
+
+
 
 inputs = np.random.randn(5, 2)
 linear1 = Linear(2, 3)
@@ -59,3 +81,8 @@ linear2.forward(relu1.output)
 softmax1.forward(linear2.output)
 
 print(softmax1.output)
+
+lossFunc = CategoricalCrossEntropy()
+loss = lossFunc.calculate(softmax1.output, np.array([0, 1, 1, 0, 2]))
+
+print(f"Loss: {loss}")
