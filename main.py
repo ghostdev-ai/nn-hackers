@@ -29,10 +29,33 @@ class Linear:
 
 
 class ReLU:
-    
+
     # Forward pass
     def forward(self, 
                 x: np.ndarray
                 ) -> np.ndarray:
         # Calculate output values from x (i.e., inputs)
         self.output = np.maximum(0, x)
+
+
+class Softmax:
+    def forward(self, 
+                x: np.ndarray
+                ) -> np.ndarray:
+        expValues = np.exp(x - np.max(x, axis=1, keepdims=True))
+        normValues = expValues / np.sum(expValues, axis=1, keepdims=True)
+        self.output = normValues
+
+
+inputs = np.random.randn(5, 2)
+linear1 = Linear(2, 3)
+relu1 = ReLU()
+linear2 = Linear(3, 3)
+softmax1 = Softmax()
+
+linear1.forward(inputs)
+relu1.forward(linear1.output)
+linear2.forward(relu1.output)
+softmax1.forward(linear2.output)
+
+print(softmax1.output)
