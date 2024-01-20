@@ -1,1 +1,1 @@
-# Neural Networks from Scratch
+# A Hackers' Guide to Neural Networks
